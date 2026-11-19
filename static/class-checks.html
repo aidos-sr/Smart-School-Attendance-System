@@ -4,40 +4,19 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>School Face · Оценка класса</title>
-<style>
-:root{--bg:#eef4ff;--card:#fff;--ink:#14233f;--mute:#5d6f8c;--line:#d7e1f2;--blue:#1d5fd0;--good:#0b7a43;--bad:#b3261e}
-@media(prefers-color-scheme:dark){:root{--bg:#0e1626;--card:#16223a;--ink:#e8eefb;--mute:#a6b6d1;--line:#344665;--blue:#8ab7ff;--good:#7ee2a8;--bad:#ff9c9c}}
-*{box-sizing:border-box}body{margin:0;font-family:system-ui,Arial,sans-serif;background:var(--bg);color:var(--ink)}
-header{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;padding:16px 20px;background:var(--card);border-bottom:1px solid var(--line)}
-h1{margin:0;font-size:20px;color:var(--blue)}h1 small{display:block;font-size:12px;color:var(--mute);font-weight:400;margin-top:4px}
-main{max-width:1100px;margin:auto;padding:18px}nav{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:20px}a{color:var(--blue)}[aria-current=page]{font-weight:700}
-button,input{font:inherit}button{cursor:pointer}button:disabled{cursor:wait;opacity:.6}input,button{border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--ink);background:var(--card)}
-input{width:100%}input:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
-.lang{margin-right:12px}.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px}
-h2{font-size:18px;margin:0 0 14px}.muted,small{color:var(--mute)}.muted{font-size:14px;line-height:1.6;margin:8px 0 16px}
-.date{display:block;max-width:230px;margin-bottom:18px}.date input{margin-top:7px}.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,.7fr);gap:18px}
-fieldset{padding:0;border:0;margin:0;min-width:0}label{display:block;font-weight:600}label small{display:block;font-weight:400;font-size:13px;margin-top:4px}
-.class-label{margin-bottom:20px}.class-label input{margin-top:8px}.criterion{display:grid;grid-template-columns:1fr 105px;gap:14px;align-items:center;padding:16px 0;border-top:1px solid var(--line)}
-.total{background:var(--bg);border-radius:12px;padding:18px;margin:12px 0 16px}.total output{display:block;font-size:42px;font-weight:750;color:var(--blue)}.total p{margin:4px 0;font-size:13px;color:var(--mute)}
-.primary{background:#1d5fd0;color:#fff;border-color:#1d5fd0;width:100%;font-weight:600}.status{min-height:24px;margin:12px 0;color:var(--good);font-size:14px}.status.error{color:var(--bad)}
-.wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;white-space:nowrap}th,td{text-align:left;border-bottom:1px solid var(--line);padding:12px 8px;font-size:14px}th{font-weight:600;color:var(--mute)}td strong{color:var(--blue)}.edit{padding:6px 10px}
-@media(max-width:700px){.grid{grid-template-columns:1fr}header{padding:14px}main{padding:14px}.panel{padding:16px}.criterion{grid-template-columns:1fr 85px}}
-</style>
+<link rel="stylesheet" href="/assets/app.css"><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><script src="/assets/ui.js" defer></script>
 </head>
-<body>
-<header><h1>School Face<small data-t="subtitle"></small></h1><div><button id="lang" class="lang" type="button"></button><a href="/logout" data-t="logout"></a></div></header>
-<main>
-  <nav aria-label="School Face"><a href="/" data-t="attendance"></a><a href="/class-checks" aria-current="page" data-t="page"></a><a href="/classes" data-t="classes_page"></a></nav>
-  <label class="date" for="date"><span data-t="date"></span><input id="date" type="date" required></label>
+<body class="score-page">
+<a class="skip-link" href="#content" data-ui="skip">К содержимому</a><aside id="sidebar" class="sidebar"><a class="brand" href="/" aria-label="School Face"><span class="brand-mark"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3m13-5h3a2 2 0 0 1 2 2v3M3 16v3a2 2 0 0 0 2 2h3m8 0h3a2 2 0 0 0 2-2v-3"/><path d="M8 9v2m8-2v2m-8 4q4 4 8 0"/></svg></span><span>School Face<small data-ui="brand">Цифровой помощник школы</small></span></a><div class="nav-caption" data-ui="nav">Рабочее пространство</div><nav aria-label="School Face"><a href="/"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span data-t="attendance"></span></a><a href="/class-checks" aria-current="page"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6"/><path d="m8 14-1 7 5-3 5 3-1-7m-6-7 2 2 3-3"/></svg><span data-t="page"></span></a><a href="/classes"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20h18M5 20V8l7-5 7 5v12M9 20v-5h6v5M9 9h.01M15 9h.01M9 12h.01M15 12h.01"/></svg><span data-t="classes_page"></span></a></nav><div class="sidebar-footer"><div class="sidebar-note"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 3v6c0 4-5 8-8 9-3-1-8-5-8-9V6l8-3Z"/><path d="m8 12 3 3 5-6"/></svg><b data-ui="private">Пространство школы</b><span data-ui="privateHint">Посещаемость, классы и связь с руководителями.</span></div><div class="timezone"><span>UTC +5</span><b data-ui="timezone">Время школы</b></div></div></aside><div class="sidebar-backdrop" id="sidebar-backdrop"></div><header class="topbar"><button id="menu-toggle" class="icon-button mobile-menu" type="button" aria-expanded="false" aria-controls="sidebar" data-ui-label="menu"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><div class="breadcrumb"><strong>School Face</strong><span class="divider">/</span><span data-t="page"></span></div><div class="top-actions"><button id="theme-toggle" class="icon-button" type="button" aria-label="Тёмная тема"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14a8 8 0 0 1-10-10 8 8 0 1 0 10 10Z"/></svg></button><button class="lang" id="lang" type="button" aria-label="Русский / Қазақша"></button><span class="user-avatar" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/></svg></span><a href="/logout" class="logout" data-ui-label="logout"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5v16h5m4-12 4 4-4 4m-5-4h11"/></svg></a></div></header><main id="content"><div class="page-heading"><div><p class="eyebrow" data-t="eyebrow"></p><h1 data-t="heading"></h1><p class="description" data-t="description"></p></div></div>  <label class="date" for="date"><span data-t="date"></span><input id="date" type="date" required></label>
   <div class="grid">
     <section class="panel">
       <h2 data-t="assessment"></h2>
       <form id="check-form">
         <fieldset id="fields" disabled>
           <label class="class-label" for="group"><span data-t="class"></span><input id="group" list="groups" maxlength="60" required autocomplete="off"><datalist id="groups"></datalist><small data-t="class_hint"></small></label>
-          <div class="criterion"><label for="uniform"><span data-t="uniform"></span><small data-t="uniform_hint"></small></label><input id="uniform" type="number" min="0" max="10" step="1" value="0" required></div>
-          <div class="criterion"><label for="cleanliness"><span data-t="cleanliness"></span><small data-t="cleanliness_hint"></small></label><input id="cleanliness" type="number" min="0" max="5" step="1" value="0" required></div>
-          <div class="criterion"><label for="students"><span data-t="students"></span><small data-t="students_hint"></small></label><input id="students" type="number" min="0" max="1000" step="1" value="0" required></div>
+          <div class="criterion"><span class="criterion-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 3-5 3 3 5 2-1v11h8V10l2 1 3-5-5-3a4 4 0 0 1-8 0Z"/></svg></span><label for="uniform"><span data-t="uniform"></span><small data-t="uniform_hint"></small></label><input id="uniform" type="number" min="0" max="10" step="1" value="0" required></div>
+          <div class="criterion"><span class="criterion-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5L12 3Zm7-1v4m-2-2h4M3 18v4m-2-2h4"/></svg></span><label for="cleanliness"><span data-t="cleanliness"></span><small data-t="cleanliness_hint"></small></label><input id="cleanliness" type="number" min="0" max="5" step="1" value="0" required></div>
+          <div class="criterion"><span class="criterion-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2m20 0v-2a4 4 0 0 0-3-3.9M16 3.2a4 4 0 0 1 0 7.6"/><circle cx="9" cy="7" r="4"/></svg></span><label for="students"><span data-t="students"></span><small data-t="students_hint"></small></label><input id="students" type="number" min="0" max="1000" step="1" value="0" required></div>
           <div class="total"><span data-t="total"></span><output id="total" for="uniform cleanliness students">0</output><p id="formula"></p></div>
           <button class="primary" id="save" type="submit" data-t="save"></button>
         </fieldset>
@@ -45,21 +24,22 @@ fieldset{padding:0;border:0;margin:0;min-width:0}label{display:block;font-weight
       <p class="status" id="status" role="status" aria-live="polite"></p>
       <button id="retry" type="button" data-t="retry" hidden></button>
     </section>
-    <aside class="panel">
+    <aside class="panel rule-panel">
       <h2 data-t="rules"></h2>
-      <p class="muted" data-t="rule1"></p><p class="muted" data-t="rule2"></p><p class="muted" data-t="rule3"></p>
-      <p class="muted" data-t="manual"></p><p class="muted" data-t="overwrite"></p>
+      <div class="rule-item"><span class="rule-badge">10</span><p class="muted" data-t="rule1"></p></div><div class="rule-item"><span class="rule-badge">5</span><p class="muted" data-t="rule2"></p></div><div class="rule-item"><span class="rule-badge">+1</span><p class="muted" data-t="rule3"></p></div>
+      <div class="rule-footer"><p class="muted" data-t="manual"></p><p class="muted" data-t="overwrite"></p></div>
     </aside>
   </div>
   <section class="panel">
     <h2 data-t="results"></h2><p class="muted" data-t="ranking"></p>
     <div class="wrap"><table><thead><tr><th data-t="class"></th><th data-t="uniform_short"></th><th data-t="cleanliness_short"></th><th data-t="students_short"></th><th data-t="total"></th><th data-t="action"></th></tr></thead><tbody id="results"></tbody></table></div>
-    <p class="muted" id="empty"></p>
+    <p class="empty-state" id="empty"></p>
   </section>
 </main>
 <script>
 const T = {
   ru: {
+    eyebrow:"ПОРЯДОК НАЧИНАЕТСЯ С МАЛОГО", heading:"Класс, которым гордимся", description:"Три понятных критерия. Прозрачный подсчёт баллов. Результаты каждого дня под рукой.",
     classes_page:'Классы и Telegram', subtitle:'Оценка класса по трём критериям', logout:'Выйти', attendance:'Присутствие', page:'Оценка чистоты класса',
     date:'Дата проверки', assessment:'Проверка класса', class:'Класс', class_hint:'Выберите класс из списка или введите новый, например 8А.',
     uniform:'1. Школьная форма', uniform_hint:'От 0 до 10 баллов', cleanliness:'2. Чистота класса', cleanliness_hint:'От 0 до 5 баллов',
@@ -77,6 +57,7 @@ const T = {
     group_error:'Введите название класса.', other:'ҚАЗ', points:'баллов',
   },
   kk: {
+    eyebrow:"ТАЗАЛЫҚ ШАҒЫН ҚАДАМНАН БАСТАЛАДЫ", heading:"Мақтан тұтар сыныбымыз", description:"Үш түсінікті критерий. Ашық есептелетін балл. Әр күннің нәтижесі қолжетімді.",
     classes_page:'Сыныптар және Telegram', subtitle:'Сыныпты үш критерий бойынша бағалау', logout:'Шығу', attendance:'Қатысу', page:'Сынып тазалығын бағалау',
     date:'Тексеру күні', assessment:'Сыныпты тексеру', class:'Сынып', class_hint:'Тізімнен сыныпты таңдаңыз немесе жаңасын енгізіңіз, мысалы 8А.',
     uniform:'1. Мектеп формасы', uniform_hint:'0-ден 10 балға дейін', cleanliness:'2. Сынып тазалығы', cleanliness_hint:'0-ден 5 балға дейін',

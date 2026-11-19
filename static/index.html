@@ -4,68 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>School Face · Присутствие</title>
-<style>
-:root{--bg:#eef4ff;--card:#fff;--ink:#14233f;--mute:#5d6f8c;--line:#d7e1f2;--blue:#1d5fd0;
---in:#0b7a43;--in-bg:#dff5e8;--out:#8a5a00;--out-bg:#fff0cc;--abs:#9b1c1c;--abs-bg:#fde3e3}
-@media(prefers-color-scheme:dark){:root{--bg:#0e1626;--card:#16223a;--ink:#e8eefb;--mute:#93a4c4;--line:#2a3a5a;--blue:#6aa3ff;
---in:#7ee2a8;--in-bg:#12382a;--out:#ffd77a;--out-bg:#42340f;--abs:#ff9c9c;--abs-bg:#47191c}}
-*{box-sizing:border-box}body{margin:0;font-family:system-ui,Arial,sans-serif;background:var(--bg);color:var(--ink)}
-header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:16px 20px;background:var(--card);border-bottom:1px solid var(--line)}
-h1{margin:0;font-size:20px;color:var(--blue)}h1 small{display:block;font-size:12px;color:var(--mute);font-weight:400}
-main{max-width:1100px;margin:0 auto;padding:18px}
-.pill{padding:6px 12px;border-radius:99px;font-size:13px;font-weight:600}
-.on{background:var(--in-bg);color:var(--in)}.off{background:var(--abs-bg);color:var(--abs)}
-.tools{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
-input,select{padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font-size:15px}
-#q{flex:1;min-width:160px}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
-.card b{display:block;font-size:30px}.card span{color:var(--mute);font-size:13px}
-.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:16px}
-.panel h2{margin:0 0 10px;font-size:15px}
-.bar{display:grid;grid-template-columns:70px 1fr 90px;gap:10px;align-items:center;margin:6px 0;font-size:14px}
-.track{height:14px;background:var(--line);border-radius:7px;overflow:hidden}.fill{height:100%;background:var(--blue)}
-table{width:100%;border-collapse:collapse}th,td{padding:10px 8px;text-align:left;border-bottom:1px solid var(--line);font-size:14px}
-th{color:var(--mute);font-weight:600}tr.row{cursor:pointer}tr.row:hover{background:color-mix(in srgb,var(--blue) 8%,transparent)}
-.st{padding:3px 10px;border-radius:99px;font-size:12px;font-weight:700;white-space:nowrap}
-.inside{background:var(--in-bg);color:var(--in)}.left{background:var(--out-bg);color:var(--out)}.absent{background:var(--abs-bg);color:var(--abs)}
-.det td{background:color-mix(in srgb,var(--blue) 5%,transparent);color:var(--mute)}
-.wrap{overflow-x:auto}.mute{color:var(--mute);font-size:12px;margin-top:10px}a{color:var(--blue)}
-.lang{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:14px;cursor:pointer;margin-left:10px}
-</style>
+<link rel="stylesheet" href="/assets/app.css"><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><script src="/assets/ui.js" defer></script>
 </head>
-<body>
-<header>
-  <h1><span data-t="title"></span><small data-t="subtitle"></small></h1>
-  <div><span id="face" class="pill off"></span><button class="lang" id="lang" type="button"></button> <a href="/logout" style="margin-left:10px" data-t="logout"></a></div>
-</header>
-<main>
-  <nav class="tools" aria-label="School Face"><a href="/" aria-current="page" data-t="attendance_page"></a><a href="/class-checks" data-t="checks_page"></a><a href="/classes" data-t="classes_page"></a></nav>
-  <div class="tools">
-    <input id="date" type="date">
-    <select id="cls"></select>
-    <select id="flt"></select>
-    <input id="q" type="search">
-  </div>
-  <div class="cards">
-    <div class="card"><b id="c-all">–</b><span data-t="all"></span></div>
-    <div class="card"><b id="c-in">–</b><span data-t="now_in"></span></div>
-    <div class="card"><b id="c-left">–</b><span data-t="gone"></span></div>
-    <div class="card"><b id="c-abs">–</b><span data-t="absent"></span></div>
-  </div>
-  <div class="panel"><h2 data-t="by_class"></h2><div id="bars"></div></div>
-  <div class="panel wrap">
-    <table>
-      <thead><tr><th data-t="h_name"></th><th data-t="h_class"></th><th data-t="h_status"></th><th data-t="h_first"></th><th data-t="h_last"></th></tr></thead>
-      <tbody id="body"></tbody>
-    </table>
-    <div class="mute" id="empty"></div>
-  </div>
-  <div class="mute"><span data-t="note"></span> <span id="upd"></span></div>
-</main>
+<body class="attendance-page">
+<a class="skip-link" href="#content" data-ui="skip">К содержимому</a><aside id="sidebar" class="sidebar"><a class="brand" href="/" aria-label="School Face"><span class="brand-mark"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3m13-5h3a2 2 0 0 1 2 2v3M3 16v3a2 2 0 0 0 2 2h3m8 0h3a2 2 0 0 0 2-2v-3"/><path d="M8 9v2m8-2v2m-8 4q4 4 8 0"/></svg></span><span>School Face<small data-ui="brand">Цифровой помощник школы</small></span></a><div class="nav-caption" data-ui="nav">Рабочее пространство</div><nav aria-label="School Face"><a href="/" aria-current="page"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span data-t="attendance_page"></span></a><a href="/class-checks"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6"/><path d="m8 14-1 7 5-3 5 3-1-7m-6-7 2 2 3-3"/></svg><span data-t="checks_page"></span></a><a href="/classes"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20h18M5 20V8l7-5 7 5v12M9 20v-5h6v5M9 9h.01M15 9h.01M9 12h.01M15 12h.01"/></svg><span data-t="classes_page"></span></a></nav><div class="sidebar-footer"><div class="sidebar-note"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 3v6c0 4-5 8-8 9-3-1-8-5-8-9V6l8-3Z"/><path d="m8 12 3 3 5-6"/></svg><b data-ui="private">Пространство школы</b><span data-ui="privateHint">Посещаемость, классы и связь с руководителями.</span></div><div class="timezone"><span>UTC +5</span><b data-ui="timezone">Время школы</b></div></div></aside><div class="sidebar-backdrop" id="sidebar-backdrop"></div><header class="topbar"><button id="menu-toggle" class="icon-button mobile-menu" type="button" aria-expanded="false" aria-controls="sidebar" data-ui-label="menu"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><div class="breadcrumb"><strong>School Face</strong><span class="divider">/</span><span data-t="attendance_page"></span></div><div class="top-actions"><span id="face" class="pill off" role="status"></span><button id="theme-toggle" class="icon-button" type="button" aria-label="Тёмная тема"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14a8 8 0 0 1-10-10 8 8 0 1 0 10 10Z"/></svg></button><button class="lang" id="lang" type="button" aria-label="Русский / Қазақша"></button><span class="user-avatar" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/></svg></span><a href="/logout" class="logout" data-ui-label="logout"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5v16h5m4-12 4 4-4 4m-5-4h11"/></svg></a></div></header><main id="content"><div class="page-heading"><div><p class="eyebrow" data-t="eyebrow"></p><h1 data-t="heading"></h1><p class="description" data-t="description"></p></div><a class="heading-action" href="/classes"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20h18M5 20V8l7-5 7 5v12M9 20v-5h6v5M9 9h.01M15 9h.01M9 12h.01M15 12h.01"/></svg><span data-t="manage_classes"></span></a></div><section class="summary-cards" aria-label="School Face"><div class="card summary-card "><div class="metric-top"><span data-t="all"></span><span class="metric-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2m20 0v-2a4 4 0 0 0-3-3.9M16 3.2a4 4 0 0 1 0 7.6"/><circle cx="9" cy="7" r="4"/></svg></span></div><b id="c-all">—</b><span class="metric-line" aria-hidden="true"></span></div><div class="card summary-card green"><div class="metric-top"><span data-t="now_in"></span><span class="metric-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3h6v18h-6M3 12h12m-4-4 4 4-4 4"/></svg></span></div><b id="c-in">—</b><span class="metric-line" aria-hidden="true"></span></div><div class="card summary-card amber"><div class="metric-top"><span data-t="gone"></span><span class="metric-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 3H4v18h6m0-9h12m-4-4 4 4-4 4"/></svg></span></div><b id="c-left">—</b><span class="metric-line" aria-hidden="true"></span></div><div class="card summary-card rose"><div class="metric-top"><span data-t="absent"></span><span class="metric-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="7" r="4"/><path d="M2 21v-2a5 5 0 0 1 5-5h4m5 1 5 5m0-5-5 5"/></svg></span></div><b id="c-abs">—</b><span class="metric-line" aria-hidden="true"></span></div></section><section class="panel filter-panel"><div class="tools"><div class="filter-field"><label for="date" data-t="date_label"></label><input id="date" type="date"></div><div class="filter-field"><label for="cls" data-t="class_label"></label><select id="cls"></select></div><div class="filter-field"><label for="flt" data-t="status_label"></label><select id="flt"></select></div><div class="filter-field search-field"><label for="q" data-t="search_label"></label><div class="search-input"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input id="q" type="search"></div></div></div></section><div class="attendance-layout"><section class="panel journal-panel"><div class="panel-heading"><h2 data-t="journal"></h2><span id="shown" class="count-badge">—</span></div><p class="panel-subtitle" data-t="journal_hint"></p><div class="wrap"><table><thead><tr><th data-t="h_name" scope="col"></th><th data-t="h_class" scope="col"></th><th data-t="h_status" scope="col"></th><th data-t="h_first" scope="col"></th><th data-t="h_last" scope="col"></th></tr></thead><tbody id="body"></tbody></table></div><div class="empty-state" id="empty"></div></section><aside class="panel class-bars-panel"><div class="panel-heading"><h2 data-t="by_class"></h2><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20h18M5 20V8l7-5 7 5v12M9 20v-5h6v5M9 9h.01M15 9h.01M9 12h.01M15 12h.01"/></svg></div><p class="panel-subtitle" data-t="bars_hint"></p><div id="bars"></div><div id="bars-empty" class="empty-state"></div><div class="day-legend"><i aria-hidden="true"></i><span data-t="bars_legend"></span></div></aside></div><div class="note-block"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/></svg><p><span data-t="note"></span> <span id="upd"></span></p></div></main>
 <script>
 const T = {
   kk: {
+    eyebrow:"МЕКТЕП КЕҢІСТІГІ", heading:"Әр оқушы назарда", description:"Қатысу белгілері, келу уақыты және сыныптар туралы ақпарат — бір экранда.", manage_classes:"Сыныптарды басқару", date_label:"Күні", class_label:"Сынып", status_label:"Мәртебе", search_label:"Оқушыны іздеу", journal:"Қатысу журналы", journal_hint:"Кіру және шығу белгілерін көру үшін оқушы жолын басыңыз.", bars_hint:"Таңдалған күнгі келу белгілері", bars_legend:"Кемінде бір белгісі бар оқушылар", bars_empty:"Сыныптар әлі қосылмаған.",
     classes_page: "Сыныптар және Telegram", attendance_page: "Қатысу", checks_page: "Сынып тазалығын бағалау",
     title: "School Face · Қатысу", subtitle: "Оқушы мектепке келді ме, кетті ме",
     logout: "Шығу", all_classes: "Барлық сыныптар", all_status: "Барлық мәртебелер",
@@ -80,6 +26,7 @@ const T = {
     note: "Мәртебе таңдалған күнгі камера белгілері бойынша есептелген (UTC+5). Бұл адамның ғимаратта шынымен болғанының кепілі емес: тану қателері және есепке алынбаған кіріс болуы мүмкін. Барлық белгілерді көру үшін жолды басыңыз."
   },
   ru: {
+    eyebrow:"ПРОСТРАНСТВО ШКОЛЫ", heading:"Каждый ученик на виду", description:"Отметки посещаемости, время прихода и информация о классах — на одном экране.", manage_classes:"Управление классами", date_label:"Дата", class_label:"Класс", status_label:"Статус", search_label:"Найти ученика", journal:"Журнал посещаемости", journal_hint:"Нажмите на ученика, чтобы увидеть отметки входа и выхода.", bars_hint:"Отметки за выбранный день", bars_legend:"Ученики хотя бы с одной отметкой", bars_empty:"Классы ещё не добавлены.",
     classes_page: "Классы и Telegram", attendance_page: "Присутствие", checks_page: "Оценка чистоты класса",
     title: "School Face · Присутствие", subtitle: "Пришёл ли ученик в школу и ушёл ли",
     logout: "Выйти", all_classes: "Все классы", all_status: "Все статусы",
@@ -117,7 +64,7 @@ function applyLang() {
   f.replaceChildren(new Option(t("all_status"), ""), new Option(t("inside"), "inside"),
                     new Option(t("left"), "left"), new Option(t("absent"), "absent"));
   f.value = keep;
-  $("cls").replaceChildren(new Option(t("all_classes"), ""));
+  $("date").setAttribute("aria-label",t("date_label"));
   if (data) render();
 }
 
@@ -131,6 +78,7 @@ async function load() {
   try {
     const r = await fetch("/api/day?date=" + $("date").value, {cache: "no-store"});
     if (r.status === 401) { location.href = "/login"; return; }
+    if (!r.ok) throw Error("load");
     data = await r.json();
     offline = false;
     render();
@@ -145,14 +93,11 @@ function render() {
   const f = $("face");
   f.className = "pill " + (data.face_online ? "on" : "off");
   f.textContent = data.face_online ? t("face_on") : t("face_off") + (data.last_sync ? " · " + data.last_sync : "");
+  if (offline) { f.className = "pill off"; f.textContent = t("no_site"); }
   const sel = $("cls"), keep = sel.value;
   const groups = [...new Set(data.people.map(p => p.group))];
-  if (sel.options.length - 1 !== groups.length) {
-    sel.replaceChildren(new Option(t("all_classes"), ""), ...groups.map(g => new Option(g, g)));
-    sel.value = groups.includes(keep) ? keep : "";
-  } else {
-    sel.options[0].text = t("all_classes");
-  }
+  sel.replaceChildren(new Option(t("all_classes"), ""), ...groups.map(g => new Option(g, g)));
+  sel.value = groups.includes(keep) ? keep : "";
   const q = $("q").value.trim().toLowerCase(), g = sel.value, s = $("flt").value;
   const list = data.people.filter(p => (!g || p.group === g) && (!s || p.status === s) && (!q || p.name.toLowerCase().includes(q)));
   const scope = data.people.filter(p => !g || p.group === g);
@@ -160,6 +105,8 @@ function render() {
   $("c-in").textContent = scope.filter(p => p.status === "inside").length;
   $("c-left").textContent = scope.filter(p => p.status === "left").length;
   $("c-abs").textContent = scope.filter(p => p.status === "absent").length;
+  $("shown").textContent = list.length;
+  $("bars-empty").textContent = data.classes.length ? "" : t("bars_empty");
   const bars = $("bars"); bars.replaceChildren();
   data.classes.forEach(c => {
     const pct = c.total ? Math.round(100 * c.present / c.total) : 0;
@@ -172,8 +119,15 @@ function render() {
   list.forEach(p => {
     const tr = el("tr", undefined, "row");
     const st = el("td"); st.append(el("span", t(p.status), "st " + p.status));
-    tr.append(el("td", p.name), el("td", p.group), st, el("td", p.first_in || "—"), el("td", p.last_at || "—"));
-    tr.onclick = () => { open.has(p.id) ? open.delete(p.id) : open.add(p.id); render(); };
+    const name = el("td"), person = el("span", undefined, "person-cell");
+    const initials = p.name.trim().split(/\s+/).slice(0,2).map(n=>Array.from(n)[0]||"").join("").toUpperCase();
+    const avatar = el("span", initials, "initials v" + (p.id % 4)); avatar.setAttribute("aria-hidden", "true");
+    person.append(avatar, el("span",p.name)); name.append(person);
+    tr.append(name, el("td", p.group), st, el("td", p.first_in || "—"), el("td", p.last_at || "—"));
+    tr.tabIndex = 0; tr.setAttribute("aria-expanded", String(open.has(p.id)));
+    tr.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); tr.click(); } });
+    tr.dataset.personId = p.id;
+    tr.onclick = () => { open.has(p.id) ? open.delete(p.id) : open.add(p.id); render(); $("body").querySelector(`[data-person-id="${p.id}"]`)?.focus({preventScroll:true}); };
     body.append(tr);
     if (open.has(p.id)) {
       const d = el("tr", undefined, "det"), td = el("td"); td.colSpan = 5;
