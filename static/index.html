@@ -1,1 +1,191 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>School Face · Присутствие</title>
+<style>
+:root{--bg:#eef4ff;--card:#fff;--ink:#14233f;--mute:#5d6f8c;--line:#d7e1f2;--blue:#1d5fd0;
+--in:#0b7a43;--in-bg:#dff5e8;--out:#8a5a00;--out-bg:#fff0cc;--abs:#9b1c1c;--abs-bg:#fde3e3}
+@media(prefers-color-scheme:dark){:root{--bg:#0e1626;--card:#16223a;--ink:#e8eefb;--mute:#93a4c4;--line:#2a3a5a;--blue:#6aa3ff;
+--in:#7ee2a8;--in-bg:#12382a;--out:#ffd77a;--out-bg:#42340f;--abs:#ff9c9c;--abs-bg:#47191c}}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:16px 20px;background:var(--card);border-bottom:1px solid var(--line)}
+h1{margin:0;font-size:20px;color:var(--blue)}h1 small{display:block;font-size:12px;color:var(--mute);font-weight:400}
+main{max-width:1100px;margin:0 auto;padding:18px}
+.pill{padding:6px 12px;border-radius:99px;font-size:13px;font-weight:600}
+.on{background:var(--in-bg);color:var(--in)}.off{background:var(--abs-bg);color:var(--abs)}
+.tools{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+input,select{padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font-size:15px}
+#q{flex:1;min-width:160px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+.card b{display:block;font-size:30px}.card span{color:var(--mute);font-size:13px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:16px}
+.panel h2{margin:0 0 10px;font-size:15px}
+.bar{display:grid;grid-template-columns:70px 1fr 90px;gap:10px;align-items:center;margin:6px 0;font-size:14px}
+.track{height:14px;background:var(--line);border-radius:7px;overflow:hidden}.fill{height:100%;background:var(--blue)}
+table{width:100%;border-collapse:collapse}th,td{padding:10px 8px;text-align:left;border-bottom:1px solid var(--line);font-size:14px}
+th{color:var(--mute);font-weight:600}tr.row{cursor:pointer}tr.row:hover{background:color-mix(in srgb,var(--blue) 8%,transparent)}
+.st{padding:3px 10px;border-radius:99px;font-size:12px;font-weight:700;white-space:nowrap}
+.inside{background:var(--in-bg);color:var(--in)}.left{background:var(--out-bg);color:var(--out)}.absent{background:var(--abs-bg);color:var(--abs)}
+.det td{background:color-mix(in srgb,var(--blue) 5%,transparent);color:var(--mute)}
+.wrap{overflow-x:auto}.mute{color:var(--mute);font-size:12px;margin-top:10px}a{color:var(--blue)}
+.lang{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:14px;cursor:pointer;margin-left:10px}
+</style>
+</head>
+<body>
+<header>
+  <h1><span data-t="title"></span><small data-t="subtitle"></small></h1>
+  <div><span id="face" class="pill off"></span><button class="lang" id="lang" type="button"></button> <a href="/logout" style="margin-left:10px" data-t="logout"></a></div>
+</header>
+<main>
+  <div class="tools">
+    <input id="date" type="date">
+    <select id="cls"></select>
+    <select id="flt"></select>
+    <input id="q" type="search">
+  </div>
+  <div class="cards">
+    <div class="card"><b id="c-all">–</b><span data-t="all"></span></div>
+    <div class="card"><b id="c-in">–</b><span data-t="now_in"></span></div>
+    <div class="card"><b id="c-left">–</b><span data-t="gone"></span></div>
+    <div class="card"><b id="c-abs">–</b><span data-t="absent"></span></div>
+  </div>
+  <div class="panel"><h2 data-t="by_class"></h2><div id="bars"></div></div>
+  <div class="panel wrap">
+    <table>
+      <thead><tr><th data-t="h_name"></th><th data-t="h_class"></th><th data-t="h_status"></th><th data-t="h_first"></th><th data-t="h_last"></th></tr></thead>
+      <tbody id="body"></tbody>
+    </table>
+    <div class="mute" id="empty"></div>
+  </div>
+  <div class="mute"><span data-t="note"></span> <span id="upd"></span></div>
+</main>
+<script>
+const T = {
+  kk: {
+    title: "School Face · Қатысу", subtitle: "Оқушы мектепке келді ме, кетті ме",
+    logout: "Шығу", all_classes: "Барлық сыныптар", all_status: "Барлық мәртебелер",
+    inside: "Мектепте", left: "Кетті", absent: "Келген жоқ", search: "Аты-жөні бойынша іздеу",
+    all: "Барлық оқушы", now_in: "Қазір мектепте", gone: "Кетіп қалды",
+    by_class: "Сыныптар бойынша қатысу", h_name: "Оқушы", h_class: "Сынып", h_status: "Мәртебе",
+    h_first: "Келген уақыты", h_last: "Соңғы белгі",
+    face_on: "Face байланыста", face_off: "Face байланыста емес", no_site: "Сайтпен байланыс жоқ",
+    IN: "Кіру", OUT: "Шығу", manual: " (қолмен)", no_events: "Осы күні белгілер жоқ",
+    none: "Таңдалған шарттар бойынша оқушы жоқ.", empty: "Тізім бос: Face бағдарламасы әлі дерек жібермеген.",
+    updated: "Жаңартылды ", other: "РУС",
+    note: "Мәртебе таңдалған күнгі камера белгілері бойынша есептелген (UTC+5). Бұл адамның ғимаратта шынымен болғанының кепілі емес: тану қателері және есепке алынбаған кіріс болуы мүмкін. Барлық белгілерді көру үшін жолды басыңыз."
+  },
+  ru: {
+    title: "School Face · Присутствие", subtitle: "Пришёл ли ученик в школу и ушёл ли",
+    logout: "Выйти", all_classes: "Все классы", all_status: "Все статусы",
+    inside: "В школе", left: "Ушёл", absent: "Не пришёл", search: "Поиск по имени",
+    all: "Всего учеников", now_in: "Сейчас в школе", gone: "Уже ушли",
+    by_class: "Явка по классам", h_name: "Ученик", h_class: "Класс", h_status: "Статус",
+    h_first: "Пришёл", h_last: "Последняя отметка",
+    face_on: "Face на связи", face_off: "Face не на связи", no_site: "Нет связи с сайтом",
+    IN: "Вход", OUT: "Выход", manual: " (вручную)", no_events: "Отметок за этот день нет",
+    none: "Нет учеников по выбранным условиям.", empty: "Список пуст: программа Face ещё не отправляла данные.",
+    updated: "Обновлено ", other: "ҚАЗ",
+    note: "Статус рассчитан по отметкам камеры за выбранный день (UTC+5). Это не гарантия фактического нахождения человека в здании: возможны пропуски распознавания и неучтённые входы. Нажмите на строку, чтобы увидеть все отметки."
+  }
+};
+const $ = id => document.getElementById(id);
+let lang = "kk", data = null, open = new Set(), offline = false;
+try { lang = localStorage.getItem("lang") === "ru" ? "ru" : "kk"; } catch (e) {}
+const t = k => T[lang][k];
+$("date").value = new Date(Date.now() + 5 * 3600e3).toISOString().slice(0, 10);
 
+function el(tag, text, cls) {
+  const e = document.createElement(tag);
+  if (text !== undefined) e.textContent = text;
+  if (cls) e.className = cls;
+  return e;
+}
+
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.title = t("title");
+  document.querySelectorAll("[data-t]").forEach(n => n.textContent = t(n.dataset.t));
+  $("q").placeholder = t("search");
+  $("lang").textContent = t("other");
+  const f = $("flt"), keep = f.value;
+  f.replaceChildren(new Option(t("all_status"), ""), new Option(t("inside"), "inside"),
+                    new Option(t("left"), "left"), new Option(t("absent"), "absent"));
+  f.value = keep;
+  $("cls").replaceChildren(new Option(t("all_classes"), ""));
+  if (data) render();
+}
+
+$("lang").onclick = () => {
+  lang = lang === "kk" ? "ru" : "kk";
+  try { localStorage.setItem("lang", lang); } catch (e) {}
+  applyLang();
+};
+
+async function load() {
+  try {
+    const r = await fetch("/api/day?date=" + $("date").value, {cache: "no-store"});
+    if (r.status === 401) { location.href = "/login"; return; }
+    data = await r.json();
+    offline = false;
+    render();
+  } catch (e) {
+    offline = true;
+    $("face").className = "pill off";
+    $("face").textContent = t("no_site");
+  }
+}
+
+function render() {
+  const f = $("face");
+  f.className = "pill " + (data.face_online ? "on" : "off");
+  f.textContent = data.face_online ? t("face_on") : t("face_off") + (data.last_sync ? " · " + data.last_sync : "");
+  const sel = $("cls"), keep = sel.value;
+  const groups = [...new Set(data.people.map(p => p.group))];
+  if (sel.options.length - 1 !== groups.length) {
+    sel.replaceChildren(new Option(t("all_classes"), ""), ...groups.map(g => new Option(g, g)));
+    sel.value = groups.includes(keep) ? keep : "";
+  } else {
+    sel.options[0].text = t("all_classes");
+  }
+  const q = $("q").value.trim().toLowerCase(), g = sel.value, s = $("flt").value;
+  const list = data.people.filter(p => (!g || p.group === g) && (!s || p.status === s) && (!q || p.name.toLowerCase().includes(q)));
+  const scope = data.people.filter(p => !g || p.group === g);
+  $("c-all").textContent = scope.length;
+  $("c-in").textContent = scope.filter(p => p.status === "inside").length;
+  $("c-left").textContent = scope.filter(p => p.status === "left").length;
+  $("c-abs").textContent = scope.filter(p => p.status === "absent").length;
+  const bars = $("bars"); bars.replaceChildren();
+  data.classes.forEach(c => {
+    const pct = c.total ? Math.round(100 * c.present / c.total) : 0;
+    const row = el("div", undefined, "bar"), track = el("div", undefined, "track"), fill = el("div", undefined, "fill");
+    fill.style.width = pct + "%"; track.append(fill);
+    row.append(el("b", c.group), track, el("span", `${c.present}/${c.total} · ${pct}%`));
+    bars.append(row);
+  });
+  const body = $("body"); body.replaceChildren();
+  list.forEach(p => {
+    const tr = el("tr", undefined, "row");
+    const st = el("td"); st.append(el("span", t(p.status), "st " + p.status));
+    tr.append(el("td", p.name), el("td", p.group), st, el("td", p.first_in || "—"), el("td", p.last_at || "—"));
+    tr.onclick = () => { open.has(p.id) ? open.delete(p.id) : open.add(p.id); render(); };
+    body.append(tr);
+    if (open.has(p.id)) {
+      const d = el("tr", undefined, "det"), td = el("td"); td.colSpan = 5;
+      td.textContent = p.events.length ? p.events.map(e => `${e.at} ${t(e.kind)}${e.source === "manual" ? t("manual") : ""}`).join("  ·  ") : t("no_events");
+      d.append(td); body.append(d);
+    }
+  });
+  $("empty").textContent = data.people.length ? (list.length ? "" : t("none")) : t("empty");
+  $("upd").textContent = t("updated") + data.server_time;
+}
+
+["date", "cls", "flt"].forEach(i => $(i).addEventListener("change", i === "date" ? load : render));
+$("q").addEventListener("input", () => data && render());
+applyLang();
+load(); setInterval(load, 5000);
+</script>
+</body>
+</html>
