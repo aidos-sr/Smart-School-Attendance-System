@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>School Face · Оценка класса</title>
+<style>
+:root{--bg:#eef4ff;--card:#fff;--ink:#14233f;--mute:#5d6f8c;--line:#d7e1f2;--blue:#1d5fd0;--good:#0b7a43;--bad:#b3261e}
+@media(prefers-color-scheme:dark){:root{--bg:#0e1626;--card:#16223a;--ink:#e8eefb;--mute:#a6b6d1;--line:#344665;--blue:#8ab7ff;--good:#7ee2a8;--bad:#ff9c9c}}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+header{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;padding:16px 20px;background:var(--card);border-bottom:1px solid var(--line)}
+h1{margin:0;font-size:20px;color:var(--blue)}h1 small{display:block;font-size:12px;color:var(--mute);font-weight:400;margin-top:4px}
+main{max-width:1100px;margin:auto;padding:18px}nav{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:20px}a{color:var(--blue)}[aria-current=page]{font-weight:700}
+button,input{font:inherit}button{cursor:pointer}button:disabled{cursor:wait;opacity:.6}input,button{border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--ink);background:var(--card)}
+input{width:100%}input:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+.lang{margin-right:12px}.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px}
+h2{font-size:18px;margin:0 0 14px}.muted,small{color:var(--mute)}.muted{font-size:14px;line-height:1.6;margin:8px 0 16px}
+.date{display:block;max-width:230px;margin-bottom:18px}.date input{margin-top:7px}.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,.7fr);gap:18px}
+fieldset{padding:0;border:0;margin:0;min-width:0}label{display:block;font-weight:600}label small{display:block;font-weight:400;font-size:13px;margin-top:4px}
+.class-label{margin-bottom:20px}.class-label input{margin-top:8px}.criterion{display:grid;grid-template-columns:1fr 105px;gap:14px;align-items:center;padding:16px 0;border-top:1px solid var(--line)}
+.total{background:var(--bg);border-radius:12px;padding:18px;margin:12px 0 16px}.total output{display:block;font-size:42px;font-weight:750;color:var(--blue)}.total p{margin:4px 0;font-size:13px;color:var(--mute)}
+.primary{background:#1d5fd0;color:#fff;border-color:#1d5fd0;width:100%;font-weight:600}.status{min-height:24px;margin:12px 0;color:var(--good);font-size:14px}.status.error{color:var(--bad)}
+.wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;white-space:nowrap}th,td{text-align:left;border-bottom:1px solid var(--line);padding:12px 8px;font-size:14px}th{font-weight:600;color:var(--mute)}td strong{color:var(--blue)}.edit{padding:6px 10px}
+@media(max-width:700px){.grid{grid-template-columns:1fr}header{padding:14px}main{padding:14px}.panel{padding:16px}.criterion{grid-template-columns:1fr 85px}}
+</style>
+</head>
+<body>
+<header><h1>School Face<small data-t="subtitle"></small></h1><div><button id="lang" class="lang" type="button"></button><a href="/logout" data-t="logout"></a></div></header>
+<main>
+  <nav aria-label="School Face"><a href="/" data-t="attendance"></a><a href="/class-checks" aria-current="page" data-t="page"></a><a href="/classes" data-t="classes_page"></a></nav>
+  <label class="date" for="date"><span data-t="date"></span><input id="date" type="date" required></label>
+  <div class="grid">
+    <section class="panel">
+      <h2 data-t="assessment"></h2>
+      <form id="check-form">
+        <fieldset id="fields" disabled>
+          <label class="class-label" for="group"><span data-t="class"></span><input id="group" list="groups" maxlength="60" required autocomplete="off"><datalist id="groups"></datalist><small data-t="class_hint"></small></label>
+          <div class="criterion"><label for="uniform"><span data-t="uniform"></span><small data-t="uniform_hint"></small></label><input id="uniform" type="number" min="0" max="10" step="1" value="0" required></div>
+          <div class="criterion"><label for="cleanliness"><span data-t="cleanliness"></span><small data-t="cleanliness_hint"></small></label><input id="cleanliness" type="number" min="0" max="5" step="1" value="0" required></div>
+          <div class="criterion"><label for="students"><span data-t="students"></span><small data-t="students_hint"></small></label><input id="students" type="number" min="0" max="1000" step="1" value="0" required></div>
+          <div class="total"><span data-t="total"></span><output id="total" for="uniform cleanliness students">0</output><p id="formula"></p></div>
+          <button class="primary" id="save" type="submit" data-t="save"></button>
+        </fieldset>
+      </form>
+      <p class="status" id="status" role="status" aria-live="polite"></p>
+      <button id="retry" type="button" data-t="retry" hidden></button>
+    </section>
+    <aside class="panel">
+      <h2 data-t="rules"></h2>
+      <p class="muted" data-t="rule1"></p><p class="muted" data-t="rule2"></p><p class="muted" data-t="rule3"></p>
+      <p class="muted" data-t="manual"></p><p class="muted" data-t="overwrite"></p>
+    </aside>
+  </div>
+  <section class="panel">
+    <h2 data-t="results"></h2><p class="muted" data-t="ranking"></p>
+    <div class="wrap"><table><thead><tr><th data-t="class"></th><th data-t="uniform_short"></th><th data-t="cleanliness_short"></th><th data-t="students_short"></th><th data-t="total"></th><th data-t="action"></th></tr></thead><tbody id="results"></tbody></table></div>
+    <p class="muted" id="empty"></p>
+  </section>
+</main>
+<script>
+const T = {
+  ru: {
+    classes_page:'Классы и Telegram', subtitle:'Оценка класса по трём критериям', logout:'Выйти', attendance:'Присутствие', page:'Оценка чистоты класса',
+    date:'Дата проверки', assessment:'Проверка класса', class:'Класс', class_hint:'Выберите класс из списка или введите новый, например 8А.',
+    uniform:'1. Школьная форма', uniform_hint:'От 0 до 10 баллов', cleanliness:'2. Чистота класса', cleanliness_hint:'От 0 до 5 баллов',
+    students:'3. Количество учеников', students_hint:'Присутствуют на проверке · 1 ученик = 1 балл',
+    total:'Итого баллов', save:'Сохранить оценку', rules:'Как начисляются баллы',
+    rule1:'Школьная форма: введите оценку от 0 до 10 баллов.', rule2:'Чистота класса: введите оценку от 0 до 5 баллов.',
+    rule3:'Количество учеников: за каждого присутствующего начисляется 1 балл. Например, 24 ученика = 24 балла. При форме 10 и чистоте 5 итог составит 39 баллов.',
+    manual:'Количество присутствующих вводится вручную во время проверки класса.',
+    overwrite:'Одна оценка на класс за день. Повторное сохранение того же класса и даты обновит результат. Оценки за другие даты сохраняются.',
+    results:'Результаты за выбранный день', ranking:'Классы отсортированы по сумме баллов: от большей к меньшей.',
+    uniform_short:'Форма / 10', cleanliness_short:'Чистота / 5', students_short:'Ученики / баллы', action:'Действие', edit:'Изменить',
+    empty:'За этот день оценок пока нет.', loading:'Загрузка…', saving:'Сохранение…', saved:'Оценка сохранена.',
+    editing:'Загружена сохранённая оценка. Можно изменить и сохранить.', error:'Не удалось загрузить данные. Проверьте соединение и повторите.',
+    save_error:'Не удалось сохранить оценку. Проверьте значения и соединение. Введённые данные остались в форме.', retry:'Повторить загрузку',
+    group_error:'Введите название класса.', other:'ҚАЗ', points:'баллов',
+  },
+  kk: {
+    classes_page:'Сыныптар және Telegram', subtitle:'Сыныпты үш критерий бойынша бағалау', logout:'Шығу', attendance:'Қатысу', page:'Сынып тазалығын бағалау',
+    date:'Тексеру күні', assessment:'Сыныпты тексеру', class:'Сынып', class_hint:'Тізімнен сыныпты таңдаңыз немесе жаңасын енгізіңіз, мысалы 8А.',
+    uniform:'1. Мектеп формасы', uniform_hint:'0-ден 10 балға дейін', cleanliness:'2. Сынып тазалығы', cleanliness_hint:'0-ден 5 балға дейін',
+    students:'3. Оқушылар саны', students_hint:'Тексеру кезінде қатысқандар · 1 оқушы = 1 балл',
+    total:'Жалпы балл', save:'Бағаны сақтау', rules:'Балл қалай есептеледі',
+    rule1:'Мектеп формасы: 0-ден 10 балға дейін баға енгізіңіз.', rule2:'Сынып тазалығы: 0-ден 5 балға дейін баға енгізіңіз.',
+    rule3:'Оқушылар саны: әр қатысқан оқушыға 1 балл беріледі. Мысалы, 24 оқушы = 24 балл. Форма 10, тазалық 5 болса, жалпы 39 балл болады.',
+    manual:'Қатысқан оқушылар саны сыныпты тексеру кезінде қолмен енгізіледі.',
+    overwrite:'Бір күнде әр сыныпқа бір баға сақталады. Сол күн мен сыныпты қайта сақтау нәтижені жаңартады. Басқа күндердегі бағалар сақталады.',
+    results:'Таңдалған күннің нәтижелері', ranking:'Сыныптар жалпы балл бойынша кему ретімен көрсетілген.',
+    uniform_short:'Форма / 10', cleanliness_short:'Тазалық / 5', students_short:'Оқушылар / балл', action:'Әрекет', edit:'Өзгерту',
+    empty:'Бұл күнге әлі баға қойылмаған.', loading:'Жүктелуде…', saving:'Сақталуда…', saved:'Баға сақталды.',
+    editing:'Сақталған баға жүктелді. Өзгертіп, қайта сақтауға болады.', error:'Деректер жүктелмеді. Байланысты тексеріп, қайталаңыз.',
+    save_error:'Баға сақталмады. Мәндер мен байланысты тексеріңіз. Енгізілген деректер формада қалды.', retry:'Қайта жүктеу',
+    group_error:'Сынып атауын енгізіңіз.', other:'РУС', points:'балл',
+  }
+};
+const $ = id => document.getElementById(id);
+let lang = 'kk', data = null, loadedDay = null, requestId = 0, message = '', messageError = false;
+try { lang = localStorage.getItem('lang') === 'ru' ? 'ru' : 'kk'; } catch(e) {}
+const t = key => T[lang][key];
+function status(key, error=false) { message=key; messageError=error; $('status').textContent=key ? t(key) : ''; $('status').className='status'+(error?' error':''); }
+function total() {
+  const values = ['uniform','cleanliness','students'].map(id => Number($(id).value) || 0);
+  $('total').value = values.reduce((a,b) => a+b,0);
+  $('formula').textContent = values.join(' + ') + ' = ' + $('total').value + ' ' + t('points');
+}
+function cell(text) { const n=document.createElement('td'); n.textContent=text; return n; }
+function renderResults() {
+  $('results').replaceChildren();
+  if (!data) { $('empty').textContent=''; return; }
+  $('empty').textContent = data.checks.length ? '' : t('empty');
+  data.checks.forEach(row => {
+    const tr=document.createElement('tr'), score=cell(''), strong=document.createElement('strong');
+    strong.textContent=row.total_score; score.append(strong);
+    const action=cell(''), button=document.createElement('button'); button.type='button'; button.className='edit'; button.textContent=t('edit');
+    button.addEventListener('click', () => { $('group').value=row.group_name; fill(row); status('editing'); $('group').focus(); });
+    action.append(button);
+    tr.append(cell(row.group_name),cell(row.uniform_score),cell(row.cleanliness_score),cell(row.student_count),score,action); $('results').append(tr);
+  });
+}
+function applyLang() {
+  document.documentElement.lang=lang; document.title='School Face · '+t('page');
+  document.querySelectorAll('[data-t]').forEach(n => n.textContent=t(n.dataset.t));
+  $('lang').textContent=t('other'); total(); renderResults(); status(message,messageError);
+}
+function fill(row) {
+  $('uniform').value=row ? row.uniform_score : 0;
+  $('cleanliness').value=row ? row.cleanliness_score : 0;
+  $('students').value=row ? row.student_count : 0; total();
+}
+function selectGroup() {
+  const row = data && data.checks.find(r => r.group_name === $('group').value.trim());
+  fill(row); status(row ? 'editing' : '');
+}
+async function load() {
+  const id=++requestId, day=$('date').value;
+  loadedDay=null; data=null; $('fields').disabled=true; $('retry').hidden=true; renderResults(); status('loading');
+  try {
+    const r=await fetch('/api/class-checks?date='+encodeURIComponent(day),{cache:'no-store'});
+    if (id!==requestId) return false;
+    if (r.status===401) { location.href='/login'; return false; }
+    if (!r.ok) throw Error('load');
+    const result=await r.json(); if (id!==requestId) return false;
+    data=result; loadedDay=day;
+    $('groups').replaceChildren(...data.groups.map(g => new Option(g,g)));
+    selectGroup(); renderResults(); $('fields').disabled=false; return true;
+  } catch(e) {
+    if(id===requestId) { status('error',true); $('retry').hidden=false; }
+    return false;
+  }
+}
+$('check-form').addEventListener('submit', async event => {
+  event.preventDefault();
+  if (!data || loadedDay!==$('date').value || !$('check-form').reportValidity()) return;
+  if (!$('group').value.trim()) { status('group_error',true); $('group').focus(); return; }
+  const payload={date:loadedDay,group:$('group').value.trim(),uniform_score:Number($('uniform').value),cleanliness_score:Number($('cleanliness').value),student_count:Number($('students').value)};
+  $('fields').disabled=true; $('date').disabled=true; $('lang').disabled=true;
+  document.querySelectorAll('.edit').forEach(n=>n.disabled=true); status('saving');
+  try {
+    const r=await fetch('/api/class-checks',{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-Token':data.csrf_token},body:JSON.stringify(payload)});
+    if(r.status===401) { location.href='/login'; return; }
+    if(!r.ok) throw Error('save');
+    // Keep the saved result visible even if a subsequent connection fails.
+    const saved=await r.json();
+    const row={day:payload.date,group_name:payload.group,uniform_score:payload.uniform_score,cleanliness_score:payload.cleanliness_score,student_count:payload.student_count,total_score:saved.total_score};
+    data.checks=data.checks.filter(r=>r.group_name!==row.group_name); data.checks.push(row);
+    data.checks.sort((a,b)=>b.total_score-a.total_score || a.group_name.localeCompare(b.group_name));
+    if(!data.groups.includes(row.group_name)) { data.groups.push(row.group_name); $('groups').append(new Option(row.group_name,row.group_name)); }
+    renderResults(); status('saved');
+  } catch(e) { status('save_error',true); }
+  finally { $('fields').disabled=false; $('date').disabled=false; $('lang').disabled=false; document.querySelectorAll('.edit').forEach(n=>n.disabled=false); }
+});
+['uniform','cleanliness','students'].forEach(id=>$(id).addEventListener('input',()=>{total();status('');}));
+$('group').addEventListener('change',selectGroup);
+$('date').addEventListener('change',load); $('retry').addEventListener('click',load);
+$('lang').addEventListener('click',()=>{lang=lang==='ru'?'kk':'ru';try {localStorage.setItem('lang',lang);} catch(e) {} applyLang();});
+$('date').value=new Date(Date.now()+5*3600e3).toISOString().slice(0,10);
+applyLang(); load();
+</script>
+</body>
+</html>

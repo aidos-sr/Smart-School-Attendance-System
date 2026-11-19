@@ -40,6 +40,7 @@ th{color:var(--mute);font-weight:600}tr.row{cursor:pointer}tr.row:hover{backgrou
   <div><span id="face" class="pill off"></span><button class="lang" id="lang" type="button"></button> <a href="/logout" style="margin-left:10px" data-t="logout"></a></div>
 </header>
 <main>
+  <nav class="tools" aria-label="School Face"><a href="/" aria-current="page" data-t="attendance_page"></a><a href="/class-checks" data-t="checks_page"></a><a href="/classes" data-t="classes_page"></a></nav>
   <div class="tools">
     <input id="date" type="date">
     <select id="cls"></select>
@@ -65,6 +66,7 @@ th{color:var(--mute);font-weight:600}tr.row{cursor:pointer}tr.row:hover{backgrou
 <script>
 const T = {
   kk: {
+    classes_page: "Сыныптар және Telegram", attendance_page: "Қатысу", checks_page: "Сынып тазалығын бағалау",
     title: "School Face · Қатысу", subtitle: "Оқушы мектепке келді ме, кетті ме",
     logout: "Шығу", all_classes: "Барлық сыныптар", all_status: "Барлық мәртебелер",
     inside: "Мектепте", left: "Кетті", absent: "Келген жоқ", search: "Аты-жөні бойынша іздеу",
@@ -78,6 +80,7 @@ const T = {
     note: "Мәртебе таңдалған күнгі камера белгілері бойынша есептелген (UTC+5). Бұл адамның ғимаратта шынымен болғанының кепілі емес: тану қателері және есепке алынбаған кіріс болуы мүмкін. Барлық белгілерді көру үшін жолды басыңыз."
   },
   ru: {
+    classes_page: "Классы и Telegram", attendance_page: "Присутствие", checks_page: "Оценка чистоты класса",
     title: "School Face · Присутствие", subtitle: "Пришёл ли ученик в школу и ушёл ли",
     logout: "Выйти", all_classes: "Все классы", all_status: "Все статусы",
     inside: "В школе", left: "Ушёл", absent: "Не пришёл", search: "Поиск по имени",
