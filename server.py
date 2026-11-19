@@ -352,15 +352,7 @@ def class_telegram_action(class_id, action):
     return jsonify(error="not found"), 404
 
 
-LOGIN = """<!doctype html><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
-<title>Вход · School Face</title><style>
-body{font-family:system-ui,Arial;background:#eaf2ff;display:grid;place-items:center;min-height:100vh;margin:0}
-form{background:#fff;padding:32px;border-radius:16px;box-shadow:0 8px 30px #1b4f9c33;width:min(340px,90vw)}
-h1{margin:0 0 4px;color:#123f8c;font-size:22px}p{color:#5a6b85;margin:0 0 18px;font-size:14px}
-input,button{width:100%;box-sizing:border-box;padding:12px;font-size:16px;border-radius:10px;border:1px solid #b9c8e3}
-button{background:#1d5fd0;color:#fff;border:0;margin-top:12px;cursor:pointer}.e{color:#b3261e;margin-top:10px;font-size:14px}
-</style><form method=post><h1>School Face</h1><p>Присутствие учеников · доступ для сотрудников</p>
-<input type=password name=password placeholder=Пароль autofocus required><button>Войти</button>{{ERR}}</form>"""
+LOGIN = (BASE / "static" / "login.html").read_text(encoding="utf-8")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -372,7 +364,7 @@ def login():
             session["csrf"] = secrets.token_urlsafe(32)
             return redirect("/")
         time.sleep(1.5)
-        return LOGIN.replace("{{ERR}}", "<div class=e>Неверный пароль</div>"), 401
+        return LOGIN.replace("{{ERR}}", "<div class=e role=alert data-ui=loginError>Неверный пароль</div>"), 401
     return LOGIN.replace("{{ERR}}", "")
 
 
@@ -401,6 +393,11 @@ def classes_page():
     if not logged_in():
         return redirect("/login")
     return send_from_directory(BASE / "static", "classes.html")
+
+
+@app.get("/assets/<path:filename>")
+def assets(filename):
+    return send_from_directory(BASE / "static" / "assets", filename)
 
 
 @app.after_request

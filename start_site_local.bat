@@ -6,6 +6,8 @@ set API_KEY=local-test-key-change-me
 set VIEW_PASSWORD=admin12345
 set SECRET_KEY=local-secret-change-me
 set COOKIE_SECURE=0
-py -3.12 -m pip install -r requirements.txt
-py -3.12 server.py
+py -3 -m pip install -r requirements.txt
+if errorlevel 1 goto end
+py -3 server.py
+:end
 pause
